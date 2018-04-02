@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Rhyous.SimpleArgs;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Rhyous.SimpleArgs;
 
 namespace Rhyous.NuGetPackageUpdater
 {
@@ -19,6 +18,7 @@ namespace Rhyous.NuGetPackageUpdater
             var directory = Args.Value("Directory");
             var package = Args.Value("Package");
             var version = Args.Value("Version");
+            var publicKeyToken = Args.Value("AssemblyPublicKeyToken");
             var assemblyVersion = Args.Value("AssemblyVersion");
 
             RepaceInFiles(directory, package, version, assemblyVersion);
@@ -26,18 +26,35 @@ namespace Rhyous.NuGetPackageUpdater
 
         internal static void RepaceInFiles(string directory, string package, string version, string assemblyVersion)
         {
-            var filesList = FileFinder.Find(directory, ".csproj$|packages.config$");
+            var filePatterns = new List<string> { ".csproj$", "packages.config$", "web.config$", "app.config$" };
+            var filesList = FileFinder.Find(directory, string.Join("|", filePatterns));
+
+            var patternDictionary = new Dictionary<string, List<Replacement>>();
             var projPatterns = new List<Replacement> { CommonReplacements.GetHintPath(package, version) };
             if (!string.IsNullOrWhiteSpace(assemblyVersion))
                 projPatterns.Add(CommonReplacements.GetReferenceInclude(package, assemblyVersion));
-            var packagesConfigPattern = new List<Replacement> { CommonReplacements.GetPackagesConfig(package, version) };
+            patternDictionary.Add(filePatterns[0], projPatterns);
 
-            foreach (var file in filesList)
+            var packagesConfigPatterns = new List<Replacement> { CommonReplacements.GetPackagesConfig(package, version) };
+            patternDictionary.Add(filePatterns[1], packagesConfigPatterns);
+
+            if (!string.IsNullOrWhiteSpace(assemblyVersion))
             {
-                var fileContent = File.ReadAllText(file);
-                IEnumerable<Replacement> patterns = file.EndsWith(".csproj", StringComparison.CurrentCultureIgnoreCase) ? projPatterns : packagesConfigPattern;
-                if (ReplaceInString(patterns, ref fileContent))
-                    File.WriteAllText(file, fileContent);
+                var webConfigPatterns = new List<Replacement> { CommonReplacements.GetWebConfig(package, assemblyVersion) };
+                patternDictionary.Add(filePatterns[2], webConfigPatterns);
+                patternDictionary.Add(filePatterns[3], webConfigPatterns);
+            }
+
+            foreach (var pattern in filePatterns)
+            {
+                if (!patternDictionary.TryGetValue(pattern, out List<Replacement> patterns))
+                    continue;
+                foreach (var file in filesList.Where(f => Regex.IsMatch(f, pattern, RegexOptions.IgnoreCase)))
+                {
+                    var fileContent = File.ReadAllText(file);
+                    if (ReplaceInString(patterns, ref fileContent))
+                        File.WriteAllText(file, fileContent);
+                }
             }
         }
 
@@ -46,10 +63,10 @@ namespace Rhyous.NuGetPackageUpdater
             bool patternFound = false;
             foreach (var pattern in patterns)
             {
-                if (!Regex.IsMatch(text, pattern.Pattern, RegexOptions.Multiline))
+                if (!Regex.IsMatch(text, pattern.Pattern, pattern.RegexOptions))
                     continue;
                 patternFound = true;
-                text = Regex.Replace(text, pattern.Pattern, pattern.ReplacementPattern, RegexOptions.Multiline);
+                text = Regex.Replace(text, pattern.Pattern, pattern.ReplacementPattern, pattern.RegexOptions);
             }
             return patternFound;
         }
