@@ -29,7 +29,7 @@ namespace Rhyous.NuGetPackageUpdater
         {
             return new Replacement
             {
-                Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\"net461\"\\s*/>)",
+                Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\"[^\"]+\"\\s*/>)",
                 ReplacementPattern = $"${{1}}{version}${{2}}",
                 RegexOptions = RegexOptions.Multiline
         };

@@ -79,6 +79,24 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             Assert.AreEqual(expected, fileContent);
         }
 
+
+        [TestMethod]
+        public void TestPackageConfig_TargetFramework_Regex()
+        {
+            // Arrange
+            var package = "Rhyous.Odata";
+            var version = "1.0.13";
+            var fileContent = $"  <package id=\"Rhyous.Odata\" version=\"1.0.12\" targetFramework=\"net46\" />";
+            var expected = $"  <package id=\"Rhyous.Odata\" version=\"1.0.13\" targetFramework=\"net46\" />";
+            var replacements = new[] { CommonReplacements.GetPackagesConfig(package, version) };
+            // Act
+            var result = Program.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
         [TestMethod]
         public void TestPackageConfigRegexMultipleLines()
         {
