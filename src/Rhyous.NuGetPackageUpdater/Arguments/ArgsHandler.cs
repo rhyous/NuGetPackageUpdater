@@ -48,7 +48,7 @@ namespace Rhyous.NuGetPackageUpdater
                 {
                     Name = "AssemblyVersion",
                     ShortName = "A",
-                    Description = "The version of the NuGet Package's dll assembly o update to.",
+                    Description = "The version of the NuGet Package's dll assembly to update to.",
                     Example = "{name}=1.0.0.0",
                     IsRequired = false
                 },
@@ -56,7 +56,7 @@ namespace Rhyous.NuGetPackageUpdater
                 {
                     Name = "AssemblyPublicKeyToken",
                     ShortName = "T",
-                    Description = "The PublicKeyToken of the NuGet Package's dll assembly o update.",
+                    Description = "The PublicKeyToken of the NuGet Package's dll assembly to update.",
                     Example = "{name}=1.0.0.0",
                     IsRequired = false
                 }
