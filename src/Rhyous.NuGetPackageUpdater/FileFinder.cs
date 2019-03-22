@@ -16,9 +16,9 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 fileList.AddRange(Directory.GetFiles(directory).Where(f => Regex.IsMatch(f, pattern, RegexOptions.IgnoreCase)));
             }
-            catch (Exception e) { throw; }
+            catch (Exception) { throw; }
             try { dirList.AddRange(Directory.GetDirectories(directory)); }
-            catch (Exception e) { throw; }
+            catch (Exception) { throw; }
             foreach (var dir in dirList)
             {
                 fileList.AddRange(Find(dir, pattern));
