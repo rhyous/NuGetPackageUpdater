@@ -60,15 +60,17 @@ namespace Rhyous.NuGetPackageUpdater
 
         internal static bool ReplaceInString(IEnumerable<Replacement> patterns, ref string text)
         {
-            bool patternFound = false;
+            bool patternFoundAndTextNotTheSameAfterReplace = false;
+            var originalText = text;
             foreach (var pattern in patterns)
             {
                 if (!Regex.IsMatch(text, pattern.Pattern, pattern.RegexOptions))
                     continue;
-                patternFound = true;
                 text = Regex.Replace(text, pattern.Pattern, pattern.ReplacementPattern, pattern.RegexOptions);
+                if (text != originalText)
+                    patternFoundAndTextNotTheSameAfterReplace = true;
             }
-            return patternFound;
+            return patternFoundAndTextNotTheSameAfterReplace;
         }
     }
 }
