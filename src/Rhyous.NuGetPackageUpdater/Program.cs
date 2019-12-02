@@ -30,7 +30,11 @@ namespace Rhyous.NuGetPackageUpdater
             var filesList = FileFinder.Find(directory, string.Join("|", filePatterns));
 
             var patternDictionary = new Dictionary<string, List<Replacement>>();
-            var projPatterns = new List<Replacement> { CommonReplacements.GetHintPath(package, version) };
+            var projPatterns = new List<Replacement> 
+            {
+                CommonReplacements.GetHintPath(package, version), 
+                CommonReplacements.GetProjectReference(package, version)
+            };
             if (!string.IsNullOrWhiteSpace(assemblyVersion))
                 projPatterns.Add(CommonReplacements.GetReferenceInclude(package, assemblyVersion));
             patternDictionary.Add(filePatterns[0], projPatterns);

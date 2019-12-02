@@ -16,6 +16,16 @@ namespace Rhyous.NuGetPackageUpdater
             };
         }
 
+        public static Replacement GetProjectReference(string package, string version)
+        {
+            return new Replacement
+            {
+                Pattern = $@"(<PackageReference Include=""{package}"" Version=""){VersionPattern}(""[^>]*>)",
+                ReplacementPattern = $@"${{1}}{version}${{2}}",
+                RegexOptions = RegexOptions.Multiline
+            };
+        }
+
         public static Replacement GetReferenceInclude(string package, string assemblyVersion)
         {
             return new Replacement

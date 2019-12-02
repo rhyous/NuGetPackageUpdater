@@ -145,6 +145,66 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             Assert.AreEqual(expected, fileContent);
         }
 
+        [TestMethod]
+        public void TestGetProjectReference()
+        {
+            // Arrange
+            var package = "Rhyous.Odata";
+            var version = "1.1.3";
+
+            var fileContent = "  <ItemGroup>"
+                            + "    <PackageReference Include=\"Rhyous.Odata\" Version=\"1.1.2\" />"
+                            + "    <PackageReference Include=\"System.ComponentModel.Annotations\" Version=\"4.6.0\" />"
+                            + "  </ItemGroup>";
+
+            var expected = "  <ItemGroup>"
+                         + "    <PackageReference Include=\"Rhyous.Odata\" Version=\"1.1.3\" />"
+                         + "    <PackageReference Include=\"System.ComponentModel.Annotations\" Version=\"4.6.0\" />"
+                         + "  </ItemGroup>";
+
+            var replacements = new[]
+            {
+                CommonReplacements.GetProjectReference(package, version)
+            };
+
+            // Act
+            var result = Program.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+        [TestMethod]
+        public void TestGetProjectReferenceNotClosed()
+        {
+            // Arrange
+            var package = "Rhyous.Odata";
+            var version = "1.1.3";
+
+            var fileContent = "  <ItemGroup>"
+                            + "    <PackageReference Include=\"Rhyous.Odata\" Version=\"1.1.2\" />"
+                            + "    <PackageReference Include=\"System.ComponentModel.Annotations\" Version=\"4.6.0\" >"
+                            + "  </ItemGroup>";
+
+            var expected = "  <ItemGroup>"
+                         + "    <PackageReference Include=\"Rhyous.Odata\" Version=\"1.1.3\" />"
+                         + "    <PackageReference Include=\"System.ComponentModel.Annotations\" Version=\"4.6.0\" >"
+                         + "  </ItemGroup>";
+
+            var replacements = new[]
+            {
+                CommonReplacements.GetProjectReference(package, version)
+            };
+
+            // Act
+            var result = Program.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
 
         [TestMethod]
         public void TestAppConfigReplacement()
