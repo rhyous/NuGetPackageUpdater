@@ -16,6 +16,16 @@ namespace Rhyous.NuGetPackageUpdater
             };
         }
 
+        public static Replacement GetHintPathWithTargetFramework(string package, string version, string targetFramework)
+        {
+            return new Replacement
+            {
+                Pattern = $@"(<HintPath>[.\\]*packages\\{package}.){VersionPattern}\\lib\\[^\\]+((?:[^<]*)</HintPath>)",
+                ReplacementPattern = $@"${{1}}{version}\lib\{targetFramework}${{2}}",
+                RegexOptions = RegexOptions.Multiline
+            };
+        }
+
         public static Replacement GetProjectReference(string package, string version)
         {
             return new Replacement
@@ -42,7 +52,17 @@ namespace Rhyous.NuGetPackageUpdater
                 Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\"[^\"]+\"\\s*/>)",
                 ReplacementPattern = $"${{1}}{version}${{2}}",
                 RegexOptions = RegexOptions.Multiline
-        };
+            };
+        }
+
+        public static Replacement GetPackagesConfigWithTargetFramework(string package, string version,string targetFramwork)
+        {
+            return new Replacement
+            {
+                Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\")[^\"]+(\"\\s*/>)",
+                ReplacementPattern = $"${{1}}{version}${{2}}{targetFramwork}${{3}}",
+                RegexOptions = RegexOptions.Multiline
+            };
         }
 
         public static Replacement GetWebConfig(string package, string assemblyVersion)

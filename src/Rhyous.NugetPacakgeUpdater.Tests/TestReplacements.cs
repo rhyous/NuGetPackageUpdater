@@ -63,6 +63,26 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         }
 
         [TestMethod]
+        public void TestProjRegex_TargetFrameworkChanged()
+        {
+            // Arrange
+            var package = "Rhyous.Odata";
+            var version = "1.0.13";
+            var targetFramework = "netstandard2.0";
+            var fileContent = @"  <HintPath>..\..\packages\Rhyous.Odata.1.0.12\lib\net461\Rhyous.Odata.dll</HintPath> ";
+            var expected = @"  <HintPath>..\..\packages\Rhyous.Odata.1.0.13\lib\netstandard2.0\Rhyous.Odata.dll</HintPath> ";
+            var replacements = new[] { CommonReplacements.GetHintPathWithTargetFramework(package, version, targetFramework) };
+
+            // Act
+            var result = Program.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+
+        [TestMethod]
         public void TestPackageConfigRegex()
         {
             // Arrange
@@ -81,7 +101,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
 
 
         [TestMethod]
-        public void TestPackageConfig_TargetFramework_Regex()
+        public void TestPackageConfig_TargetFrameworkDoesNotChange_Regex()
         {
             // Arrange
             var package = "Rhyous.Odata";
@@ -89,6 +109,25 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var fileContent = $"  <package id=\"Rhyous.Odata\" version=\"1.0.12\" targetFramework=\"net46\" />";
             var expected = $"  <package id=\"Rhyous.Odata\" version=\"1.0.13\" targetFramework=\"net46\" />";
             var replacements = new[] { CommonReplacements.GetPackagesConfig(package, version) };
+            // Act
+            var result = Program.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+        [TestMethod]
+        public void TestPackageConfig_TargetFrameworkDoesChange_Regex()
+        {
+            // Arrange
+            var package = "Rhyous.Odata";
+            var version = "1.0.13";
+            var targetFramwork = "netstandard2.0";
+            var fileContent = $"  <package id=\"Rhyous.Odata\" version=\"1.0.12\" targetFramework=\"net46\" />";
+            var expected = $"  <package id=\"Rhyous.Odata\" version=\"1.0.13\" targetFramework=\"netstandard2.0\" />";
+            var replacements = new[] { CommonReplacements.GetPackagesConfigWithTargetFramework(package, version, targetFramwork) };
+
             // Act
             var result = Program.ReplaceInString(replacements, ref fileContent);
 

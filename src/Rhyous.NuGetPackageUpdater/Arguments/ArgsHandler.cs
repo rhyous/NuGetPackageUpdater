@@ -59,6 +59,22 @@ namespace Rhyous.NuGetPackageUpdater
                     Description = "The PublicKeyToken of the NuGet Package's dll assembly to update.",
                     Example = "{name}=1.0.0.0",
                     IsRequired = false
+                },
+                new Argument
+                {
+                    Name = "CsprojTargetFramework",
+                    ShortName = "ctf",
+                    Description = "The target framework, ie. net461, net48, netstandard2.0, etc.",
+                    Example = "{name}=netstandard2.0",
+                    IsRequired = false
+                },
+                                new Argument
+                {
+                    Name = "PackagesConfigTargetFramework",
+                    ShortName = "pctf",
+                    Description = "The target framework, ie. net461, net48, netstandard2.0, etc.",
+                    Example = "{name}=netstandard2.0",
+                    IsRequired = false
                 }
             });
         }

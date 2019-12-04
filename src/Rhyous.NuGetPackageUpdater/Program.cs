@@ -20,11 +20,14 @@ namespace Rhyous.NuGetPackageUpdater
             var version = Args.Value("Version");
             var publicKeyToken = Args.Value("AssemblyPublicKeyToken");
             var assemblyVersion = Args.Value("AssemblyVersion");
+            var csProjTargetFramework = Args.Value("CsprojTargetFramework");
+            var packagesConfigTargetFramework = Args.Value("PackagesConfigTargetFramework");
 
-            RepaceInFiles(directory, package, version, assemblyVersion);
+            RepaceInFiles(directory, package, version, assemblyVersion, 
+                          csProjTargetFramework, packagesConfigTargetFramework);
         }
 
-        internal static void RepaceInFiles(string directory, string package, string version, string assemblyVersion)
+        internal static void RepaceInFiles(string directory, string package, string version, string assemblyVersion, string csProjTargetFramework, string packageConfigTargetFramework)
         {
             var filePatterns = new List<string> { ".csproj$", "packages.config$", "web.config$", "app.config$" };
             var filesList = FileFinder.Find(directory, string.Join("|", filePatterns));
@@ -32,14 +35,21 @@ namespace Rhyous.NuGetPackageUpdater
             var patternDictionary = new Dictionary<string, List<Replacement>>();
             var projPatterns = new List<Replacement> 
             {
-                CommonReplacements.GetHintPath(package, version), 
+                string.IsNullOrWhiteSpace(csProjTargetFramework) 
+                    ? CommonReplacements.GetHintPath(package, version)
+                    : CommonReplacements.GetHintPathWithTargetFramework(package, version, csProjTargetFramework), 
                 CommonReplacements.GetProjectReference(package, version)
             };
             if (!string.IsNullOrWhiteSpace(assemblyVersion))
                 projPatterns.Add(CommonReplacements.GetReferenceInclude(package, assemblyVersion));
             patternDictionary.Add(filePatterns[0], projPatterns);
 
-            var packagesConfigPatterns = new List<Replacement> { CommonReplacements.GetPackagesConfig(package, version) };
+            var packagesConfigPatterns = new List<Replacement> 
+            {
+                string.IsNullOrWhiteSpace(csProjTargetFramework) 
+                    ? CommonReplacements.GetPackagesConfig(package, version) 
+                    : CommonReplacements.GetPackagesConfigWithTargetFramework(package, version, packageConfigTargetFramework)
+            };
             patternDictionary.Add(filePatterns[1], packagesConfigPatterns);
 
             if (!string.IsNullOrWhiteSpace(assemblyVersion))
