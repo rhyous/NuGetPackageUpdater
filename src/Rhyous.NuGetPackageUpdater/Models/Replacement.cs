@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Rhyous.NuGetPackageUpdater
+namespace Rhyous.NuGetPackageUpdater.Models
 {
     public class Replacement
     {

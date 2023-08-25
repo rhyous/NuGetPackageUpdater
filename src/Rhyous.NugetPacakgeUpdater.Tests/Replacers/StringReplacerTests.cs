@@ -1,17 +1,23 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rhyous.NuGetPackageUpdater;
+using Rhyous.NuGetPackageUpdater.Replacers;
 
-namespace Rhyous.NugetPacakgeUpdater.Tests
+namespace Rhyous.NugetPacakgeUpdater.Tests.Replacers
 {
     [TestClass]
-    public class TestReplacements
+    public class StringReplacerTests
     {
+        private StringReplacer CreateStringReplacer()
+        {
+            return new StringReplacer();
+        }
+
+        #region ReplaceInString
         [TestMethod]
         public void TestProjRegex()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var fileContent = @"  <HintPath>..\..\packages\Rhyous.Odata.1.0.12\lib\net461\Rhyous.Odata.dll</HintPath> ";
@@ -19,7 +25,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var replacements = new[] { CommonReplacements.GetHintPath(package, version) };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -30,6 +36,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestProjRegex2()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var fileContent = @"      <HintPath>..\..\packages\Rhyous.Odata.1.0.8\lib\net461\Rhyous.Odata.dll</HintPath>";
@@ -37,7 +44,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var replacements = new[] { CommonReplacements.GetHintPath(package, version) };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -48,6 +55,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestProjRegexMultipleLines()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var fileContent = "stuff then\r\n   <HintPath>..\\..\\packages\\Rhyous.Odata.1.0.12\\lib\\net461\\Rhyous.Odata.dll</HintPath>  \r\nstuff then more stuff";
@@ -55,7 +63,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var replacements = new[] { CommonReplacements.GetHintPath(package, version) };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -66,6 +74,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestProjRegex_TargetFrameworkChanged()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var targetFramework = "netstandard2.0";
@@ -74,7 +83,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var replacements = new[] { CommonReplacements.GetHintPathWithTargetFramework(package, version, targetFramework) };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -86,13 +95,14 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestPackageConfigRegex()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var fileContent = $"  <package id=\"Rhyous.Odata\" version=\"1.0.12\" targetFramework=\"net461\" />";
-           var expected = $"  <package id=\"Rhyous.Odata\" version=\"1.0.13\" targetFramework=\"net461\" />";
+            var expected = $"  <package id=\"Rhyous.Odata\" version=\"1.0.13\" targetFramework=\"net461\" />";
             var replacements = new[] { CommonReplacements.GetPackagesConfig(package, version) };
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -104,13 +114,14 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestPackageConfig_TargetFrameworkDoesNotChange_Regex()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var fileContent = $"  <package id=\"Rhyous.Odata\" version=\"1.0.12\" targetFramework=\"net46\" />";
             var expected = $"  <package id=\"Rhyous.Odata\" version=\"1.0.13\" targetFramework=\"net46\" />";
             var replacements = new[] { CommonReplacements.GetPackagesConfig(package, version) };
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -121,6 +132,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestPackageConfig_TargetFrameworkDoesChange_Regex()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var targetFramwork = "netstandard2.0";
@@ -129,7 +141,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var replacements = new[] { CommonReplacements.GetPackagesConfigWithTargetFramework(package, version, targetFramwork) };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -140,6 +152,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestPackageConfigRegexMultipleLines()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.0.13";
             var fileContent = $"stuff then\r\n   <package id=\"Rhyous.Odata\" version=\"1.0.12\" targetFramework=\"net461\" />  \r\nstuff then more stuff";
@@ -147,7 +160,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var replacements = new[] { CommonReplacements.GetPackagesConfig(package, version) };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -158,6 +171,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestAssemblyAndHintPathLines()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.SimplePluginLoader";
             var version = "1.3.0";
             var assemblyVersion = "1.3.0.0";
@@ -165,7 +179,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             var fileContent = "    <Reference Include=\"Rhyous.SimplePluginLoader, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL\">"
                             + @"      <HintPath>..\..\packages\Rhyous.SimplePluginLoader.1.2.5\lib\net40-client\Rhyous.SimplePluginLoader.dll</HintPath>"
                             + "    </Reference>";
-                        
+
             var expected = "    <Reference Include=\"Rhyous.SimplePluginLoader, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL\">"
                          + @"      <HintPath>..\..\packages\Rhyous.SimplePluginLoader.1.3.0\lib\net40-client\Rhyous.SimplePluginLoader.dll</HintPath>"
                          + "    </Reference>";
@@ -177,7 +191,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -188,6 +202,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestGetProjectReference()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.1.3";
 
@@ -207,7 +222,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -218,6 +233,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestGetProjectReferenceNotClosed()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Rhyous.Odata";
             var version = "1.1.3";
 
@@ -237,7 +253,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -249,6 +265,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestAppConfigReplacement()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Newtonsoft.Json";
             var assemblyVersion = "11.0.0.0";
 
@@ -268,7 +285,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
@@ -279,6 +296,7 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
         public void TestAppConfigReplacementFullAppConfig()
         {
             // Arrange
+            var replacer = CreateStringReplacer();
             var package = "Newtonsoft.Json";
             var assemblyVersion = "11.0.0.0";
 
@@ -348,11 +366,13 @@ namespace Rhyous.NugetPacakgeUpdater.Tests
             };
 
             // Act
-            var result = Program.ReplaceInString(replacements, ref fileContent);
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
 
             // Assert
             Assert.IsTrue(result);
             Assert.AreEqual(expected, fileContent);
         }
+        #endregion
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using Rhyous.NuGetPackageUpdater.Models;
+using System.Text.RegularExpressions;
 
 namespace Rhyous.NuGetPackageUpdater
 {
@@ -10,9 +11,9 @@ namespace Rhyous.NuGetPackageUpdater
         {
             return new Replacement
             {
-                Pattern = $@"(<HintPath>[.\\]*packages\\{package}.){VersionPattern}((?:[^<]*)</HintPath>)",
+                Pattern = $@"(<HintPath>.*packages\\{package}.){VersionPattern}((?:[^<]*)</HintPath>)",
                 ReplacementPattern = $@"${{1}}{version}${{2}}",
-                RegexOptions = RegexOptions.Multiline
+                RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }
 
@@ -20,9 +21,9 @@ namespace Rhyous.NuGetPackageUpdater
         {
             return new Replacement
             {
-                Pattern = $@"(<HintPath>[.\\]*packages\\{package}.){VersionPattern}\\lib\\[^\\]+((?:[^<]*)</HintPath>)",
+                Pattern = $@"(<HintPath>.*packages\\{package}.){VersionPattern}\\lib\\[^\\]+((?:[^<]*)</HintPath>)",
                 ReplacementPattern = $@"${{1}}{version}\lib\{targetFramework}${{2}}",
-                RegexOptions = RegexOptions.Multiline
+                RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }
 
@@ -32,7 +33,7 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 Pattern = $@"(<PackageReference Include=""{package}"" Version=""){VersionPattern}(""[^>]*>)",
                 ReplacementPattern = $@"${{1}}{version}${{2}}",
-                RegexOptions = RegexOptions.Multiline
+                RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }
 
@@ -42,7 +43,7 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 Pattern = $"(<Reference Include=\"{package}, Version=){VersionPattern}(,)",
                 ReplacementPattern = $"${{1}}{assemblyVersion}${{2}}",
-                RegexOptions = RegexOptions.Multiline
+                RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }
         public static Replacement GetPackagesConfig(string package, string version)
@@ -51,7 +52,7 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\"[^\"]+\"\\s*/>)",
                 ReplacementPattern = $"${{1}}{version}${{2}}",
-                RegexOptions = RegexOptions.Multiline
+                RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }
 
@@ -61,7 +62,7 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\")[^\"]+(\"\\s*/>)",
                 ReplacementPattern = $"${{1}}{version}${{2}}{targetFramwork}${{3}}",
-                RegexOptions = RegexOptions.Multiline
+                RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }
 
@@ -71,7 +72,7 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 Pattern = $"(\\s*<dependentAssembly>\\s*<assemblyIdentity\\s+name=\"{package}\"[^>]+>\\s*<bindingRedirect\\s+oldVersion=\"0.0.0.0-){VersionPattern}(\"\\s+newVersion=\"){VersionPattern}(\"\\s*/>\\s*</dependentAssembly>)",
                 ReplacementPattern = $"${{1}}{assemblyVersion}${{2}}{assemblyVersion}${{3}}",
-                RegexOptions = RegexOptions.None
+                RegexOptions = RegexOptions.None | RegexOptions.IgnoreCase
             };
         }
 
@@ -81,7 +82,7 @@ namespace Rhyous.NuGetPackageUpdater
             {
                 Pattern = $"(\\s*<assemblyIdentity\\s+name=\"{package}\"\\s+publicKeyToken=\")[^\"]+(\"\\s+culture=\"neutral\"\\s*/>\\s*<bindingRedirect oldVersion=\"0.0.0.0-){VersionPattern}(\"\\s+newVersion=\"){VersionPattern}(\"\\s*/>)",
                 ReplacementPattern = $"${{1}}{publicKeyToken}{{2}}{version}${{3}}{version}${{4}}",
-                RegexOptions = RegexOptions.None
+                RegexOptions = RegexOptions.None | RegexOptions.IgnoreCase
             };
         }
     }

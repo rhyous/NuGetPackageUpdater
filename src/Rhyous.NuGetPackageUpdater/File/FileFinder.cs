@@ -6,10 +6,19 @@ using System.Text.RegularExpressions;
 
 namespace Rhyous.NuGetPackageUpdater
 {
-    public class FileFinder
+    internal class FileFinder : IFileFinder
     {
-        public static IEnumerable<string> Find(string directory, string pattern)
+        private readonly ISettings _Settings;
+
+        public FileFinder(ISettings settings)
         {
+            _Settings = settings;
+        }
+
+        public IList<string> Find(string directory, string pattern)
+        {
+            if (_Settings.ExcludeDirs.Contains(directory))
+                return new List<string>();
             var fileList = new List<string>();
             var dirList = new List<string>();
             try
