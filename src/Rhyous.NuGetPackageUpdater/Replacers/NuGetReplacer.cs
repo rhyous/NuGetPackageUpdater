@@ -74,6 +74,7 @@ namespace Rhyous.NuGetPackageUpdater.Replacers
                             changedFiles.Add(file);
                         if (_Settings.DoNothing)
                             continue;
+                        _FileIO.ClearReadonly(file);
                         _FileIO.WriteAllText(file, fileContent);
                     }
                 }
