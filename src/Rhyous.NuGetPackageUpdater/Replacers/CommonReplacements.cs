@@ -1,7 +1,7 @@
 ﻿using Rhyous.NuGetPackageUpdater.Models;
 using System.Text.RegularExpressions;
 
-namespace Rhyous.NuGetPackageUpdater
+namespace Rhyous.NuGetPackageUpdater.Replacers
 {
     public class CommonReplacements
     {
@@ -56,12 +56,12 @@ namespace Rhyous.NuGetPackageUpdater
             };
         }
 
-        public static Replacement GetPackagesConfigWithTargetFramework(string package, string version,string targetFramwork)
+        public static Replacement GetPackagesConfigWithTargetFramework(string package, string version, string targetFramework)
         {
             return new Replacement
             {
-                Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\")[^\"]+(\"\\s*/>)",
-                ReplacementPattern = $"${{1}}{version}${{2}}{targetFramwork}${{3}}",
+                Pattern = $"(<package\\s+id=\"{package}\"\\s+version=\"){VersionPattern}(\"\\s+targetFramework=\")[^\"]*(\"\\s*/>)",
+                ReplacementPattern = $"${{1}}{version}${{2}}{targetFramework}${{3}}",
                 RegexOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase
             };
         }

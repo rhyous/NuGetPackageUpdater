@@ -1,5 +1,4 @@
-﻿using Rhyous.NuGetPackageUpdater;
-using Rhyous.NuGetPackageUpdater.Models;
+﻿using Rhyous.NuGetPackageUpdater.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;

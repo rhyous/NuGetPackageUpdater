@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rhyous.NuGetPackageUpdater;
 using Rhyous.NuGetPackageUpdater.Replacers;
 
 namespace Rhyous.NugetPacakgeUpdater.Tests.Replacers
