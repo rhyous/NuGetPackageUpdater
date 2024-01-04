@@ -35,7 +35,7 @@ namespace Rhyous.NuGetPackageUpdater
                     Name = "ExcludeDirectories",
                     ShortName = "ed",
                     Description = "Directories to skip, semicolon separated.",
-                    Example = "{name}=c:\\dev\folderToSkip",                    
+                    Example = "{name}=c:\\dev\folderToSkip",
                     IsRequired = false
                 },
                 new Argument
