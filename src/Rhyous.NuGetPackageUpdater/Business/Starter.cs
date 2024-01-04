@@ -52,7 +52,7 @@ namespace Rhyous.NuGetPackageUpdater
             _Settings.DoNothing = _ArgsReader.GetValue("DoNothing").To<bool>();
             _Settings.TFPath = _ArgsReader.GetValue("TFdotExePath").To<string>();
             _Settings.CheckoutFromTFS = _ArgsReader.GetValue("TFSCheckout").To<bool>();
-            _Settings.ExcludeDirs = _ArgsReader.GetValue("TFSCheckout")?.Split(';', System.StringSplitOptions.RemoveEmptyEntries)?.ToList();
+            _Settings.ExcludeDirs = _ArgsReader.GetValue("ExcludeDirectories")?.Split(';', System.StringSplitOptions.RemoveEmptyEntries)?.ToList();
             var directory = _ArgsReader.GetValue("Directory");
             var replaceCsprojReference = _ArgsReader.GetValue("ReplaceCsprojReference").To<bool>();
 
