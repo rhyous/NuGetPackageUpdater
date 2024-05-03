@@ -1,5 +1,6 @@
 ﻿using Rhyous.NuGetPackageUpdater.Replacers;
 using Rhyous.NuGetPackageUpdater.TFS;
+using Rhyous.NuGetPackageUpdater.Wrappers;
 using Rhyous.SimpleArgs;
 using System.Threading.Tasks;
 
@@ -15,8 +16,9 @@ namespace Rhyous.NuGetPackageUpdater
             var argsManager = new ArgsManager<ArgsHandler>();
             IArgsReader argsReader = new ArgsReader();
             ISettings settings = new Settings();
+            IDirectoryWrapper directoryWrapper = new DirectoryWrapper();
             IStringReplacer stringReplacer = new StringReplacer();
-            IFileFinder fileFinder = new FileFinder(settings);
+            IFileFinder fileFinder = new FileFinder(settings, directoryWrapper);
             IFileIO fileIO = new FileIO();
             var tfsCheckout = new TFSCheckout(settings);
             INuGetReplacer nuGetReplacer = new NuGetReplacer(stringReplacer, fileFinder, fileIO, settings, tfsCheckout);
