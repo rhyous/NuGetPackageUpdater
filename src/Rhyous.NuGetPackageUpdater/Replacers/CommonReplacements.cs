@@ -1,5 +1,7 @@
 ﻿using Rhyous.NuGetPackageUpdater.Models;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Rhyous.NuGetPackageUpdater.Replacers
 {
@@ -70,18 +72,41 @@ namespace Rhyous.NuGetPackageUpdater.Replacers
         {
             return new Replacement
             {
-                Pattern = $"(\\s*<dependentAssembly>\\s*<assemblyIdentity\\s+name=\"{package}\"[^>]+>\\s*<bindingRedirect\\s+oldVersion=\"0.0.0.0-){VersionPattern}(\"\\s+newVersion=\"){VersionPattern}(\"\\s*/>\\s*</dependentAssembly>)",
-                ReplacementPattern = $"${{1}}{assemblyVersion}${{2}}{assemblyVersion}${{3}}",
+                Pattern = $"(<assemblyIdentity\\s+name=\"Newtonsoft.Json\")"                // Group 1
+                        + $"([^>]+)"                                                        // Group 2 any attribute
+                        + $"(publicKeyToken=\")"                                            // Group 3
+                        + "([^\\\"]+)"                                                      // Group 4 The existing publicKeyToken
+                        + $"(\\\"[^>]+>)"                                                   // Group 5 The rest and the next line and whitespace if there is any
+                        + $"(\\s*<!--[^>]*>)*"                                              // Group 6 Any number of comments
+                        + $"(\\s*)"                                                         // Group 7 The rest and the next line and whitespace if there is any
+                        + $"(<bindingRedirect\\s+oldVersion=\\\"0.0.0.0-)"                  // Group 8 everything up to the previous version.
+                        + $"(?:[0-9]+\\.)+[0-9]+"                                           // Not a group as we don't want the previous version
+                        + $"(\\\"\\s+newVersion=\\\")"                                      // Group 9 everything up to the new version.
+                        + $"(?:[0-9]+\\.)+[0-9]+"                                           // Unumbered group - The new version.
+                        + $"(\\\"\\s*/>)",                                                  // Group 10 Everything after
+                ReplacementPattern = $"${{1}}${{2}}${{3}}${{4}}${{5}}${{6}}${{7}}${{8}}{assemblyVersion}${{9}}{assemblyVersion}${{10}}",
                 RegexOptions = RegexOptions.None | RegexOptions.IgnoreCase
             };
         }
 
-        public static Replacement GetWebConfig(string package, string version, string publicKeyToken)
+        public static Replacement GetWebConfig(string package, string assemblyVersion, string publicKeyToken)
         {
             return new Replacement
             {
-                Pattern = $"(\\s*<assemblyIdentity\\s+name=\"{package}\"\\s+publicKeyToken=\")[^\"]+(\"\\s+culture=\"neutral\"\\s*/>\\s*<bindingRedirect oldVersion=\"0.0.0.0-){VersionPattern}(\"\\s+newVersion=\"){VersionPattern}(\"\\s*/>)",
-                ReplacementPattern = $"${{1}}{publicKeyToken}{{2}}{version}${{3}}{version}${{4}}",
+                //Pattern = "(<assemblyIdentity\\s+name=\"Newtonsoft.Json\")([^>]+)(publicKeyToken=\")[^\\\"]+\\\"([^>]+>)(\\s*<!--[^>]*>)*(\\s*)(<bindingRedirect\\s+oldVersion=\\\"0.0.0.0-)(?:[0-9]+\\.)+[0-9]+(\\\"\\s+newVersion=\\\")(?:[0-9]+\\.)+[0-9](\\\"\\s*/>)",
+                Pattern = $"(<assemblyIdentity\\s+name=\"Newtonsoft.Json\")"                // Group 1
+                        + $"([^>]+)"                                                        // Group 2 any attribute
+                        + $"(publicKeyToken=\")"                                            // Group 3
+                        + $"([^\\\"]+)"                                                      // Group 4 The existing publicKeyToken
+                        + $"(\\\"[^>]+>)"                                                   // Group 5 The rest and the next line and whitespace if there is any
+                        + $"(\\s*<!--[^>]*>)*"                                              // Group 6 Any number of comments
+                        + $"(\\s*)"                                                         // Group 7 The rest and the next line and whitespace if there is any
+                        + $"(<bindingRedirect\\s+oldVersion=\\\"0.0.0.0-)"                  // Group 8 everything up to the previous version.
+                        + $"(?:[0-9]+\\.)+[0-9]+"                                           // Not a group as we don't want the previous version
+                        + $"(\\\"\\s+newVersion=\\\")"                                      // Group 9 everything up to the new version.
+                        + $"(?:[0-9]+\\.)+[0-9]+"                                           // Unumbered group - The new version.
+                        + $"(\\\"\\s*/>)",                                                  // Group 10 Everything after
+                ReplacementPattern = $"${{1}}${{2}}${{3}}{publicKeyToken}${{5}}${{6}}${{7}}${{8}}{assemblyVersion}${{9}}{assemblyVersion}${{10}}",
                 RegexOptions = RegexOptions.None | RegexOptions.IgnoreCase
             };
         }

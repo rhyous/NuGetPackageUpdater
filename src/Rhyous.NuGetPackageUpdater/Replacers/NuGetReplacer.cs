@@ -59,12 +59,19 @@ namespace Rhyous.NuGetPackageUpdater.Replacers
                 patternDictionary.Add(filePatterns[2], webConfigPatterns);
                 patternDictionary.Add(filePatterns[3], webConfigPatterns);
             }
+            if (!string.IsNullOrWhiteSpace(publicKeyToken))
+            {
+                var webConfigPatterns = new List<Replacement> { CommonReplacements.GetWebConfig(package, assemblyVersion, publicKeyToken) };
+                patternDictionary.Add(filePatterns[2], webConfigPatterns);
+                patternDictionary.Add(filePatterns[3], webConfigPatterns);
+            }
             var changedFiles = new HashSet<string>();
             foreach (var pattern in filePatterns)
             {
-                if (!patternDictionary.TryGetValue(pattern, out List<Replacement> patterns))
+                 if (!patternDictionary.TryGetValue(pattern, out List<Replacement> patterns))
                     continue;
-                foreach (var file in filesList.Where(f => Regex.IsMatch(f, pattern, RegexOptions.IgnoreCase)))
+                var files = filesList.Where(f => Regex.IsMatch(f, pattern, RegexOptions.IgnoreCase)).ToList();
+                foreach (var file in  files)
                 {
                     var fileContent = _FileIO.ReadAllText(file);
                     if (_stringReplacer.ReplaceInString(patterns, ref fileContent))

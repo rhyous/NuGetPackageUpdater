@@ -259,7 +259,6 @@ namespace Rhyous.NugetPacakgeUpdater.Tests.Replacers
             Assert.AreEqual(expected, fileContent);
         }
 
-
         [TestMethod]
         public void TestAppConfigReplacement()
         {
@@ -281,6 +280,146 @@ namespace Rhyous.NugetPacakgeUpdater.Tests.Replacers
             var replacements = new[]
             {
                 CommonReplacements.GetWebConfig(package, assemblyVersion),
+            };
+
+            // Act
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+        [TestMethod]
+        public void TestAppConfigReplacement_WithComments()
+        {
+            // Arrange
+            var replacer = CreateStringReplacer();
+            var package = "Newtonsoft.Json";
+            var assemblyVersion = "11.0.0.0";
+
+            var fileContent = "      <dependentAssembly>"
+                            + "        <!--some comment 1 -->"
+                            + "        <assemblyIdentity name=\"Newtonsoft.Json\" publicKeyToken=\"30ad4fe6b2a6aeed\" culture=\"neutral\" />"
+                            + "        <!--some comment 2 -->"
+                            + "        <bindingRedirect oldVersion=\"0.0.0.0-10.0.0.0\" newVersion=\"10.0.0.0\" />"
+                            + "        <!--some comment 3 -->"
+                            + "      </dependentAssembly>";
+
+            var expected = "      <dependentAssembly>"
+                         + "        <!--some comment 1 -->"
+                         + "        <assemblyIdentity name=\"Newtonsoft.Json\" publicKeyToken=\"30ad4fe6b2a6aeed\" culture=\"neutral\" />"
+                         + "        <!--some comment 2 -->"
+                         + "        <bindingRedirect oldVersion=\"0.0.0.0-11.0.0.0\" newVersion=\"11.0.0.0\" />"
+                         + "        <!--some comment 3 -->"
+                         + "      </dependentAssembly>";
+
+            var replacements = new[]
+            {
+                CommonReplacements.GetWebConfig(package, assemblyVersion),
+            };
+
+            // Act
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+        [TestMethod]
+        public void TestAppConfigReplacement_WithComments2()
+        {
+            // Arrange
+            var replacer = CreateStringReplacer();
+            var package = "Newtonsoft.Json";
+            var assemblyVersion = "13.0.0.0";
+
+            var fileContent = @"            <dependentAssembly>
+                <assemblyIdentity name=""Newtonsoft.Json"" publicKeyToken=""30ad4fe6b2a6aeed"" culture=""neutral"" />
+                <!-- This is manually adjusted and should be maintained until we update Newtonsoft.Json-->
+                <bindingRedirect oldVersion=""0.0.0.0-13.0.0.0"" newVersion=""9.0.0.0"" />
+            </dependentAssembly>";
+
+            var expected = @"            <dependentAssembly>
+                <assemblyIdentity name=""Newtonsoft.Json"" publicKeyToken=""30ad4fe6b2a6aeed"" culture=""neutral"" />
+                <!-- This is manually adjusted and should be maintained until we update Newtonsoft.Json-->
+                <bindingRedirect oldVersion=""0.0.0.0-13.0.0.0"" newVersion=""13.0.0.0"" />
+            </dependentAssembly>";
+
+            var replacements = new[]
+            {
+                CommonReplacements.GetWebConfig(package, assemblyVersion),
+            };
+
+            // Act
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+        [TestMethod]
+        public void TestAppConfigReplacement_WithPublicKeyToken()
+        {
+            // Arrange
+            var replacer = CreateStringReplacer();
+            var package = "Newtonsoft.Json";
+            var assemblyVersion = "11.0.0.0";
+            var publicKeyToken = "30ad4fe6b2a6aeed";
+
+            var fileContent = @"      <dependentAssembly>
+        <assemblyIdentity name=""Newtonsoft.Json"" publicKeyToken=""30ad4fe6b2a6aaaa"" culture=""neutral"" />
+        <bindingRedirect oldVersion=""0.0.0.0-10.0.0.0"" newVersion=""10.0.0.0"" />
+      </dependentAssembly>";
+
+            var expected = @"      <dependentAssembly>
+        <assemblyIdentity name=""Newtonsoft.Json"" publicKeyToken=""30ad4fe6b2a6aeed"" culture=""neutral"" />
+        <bindingRedirect oldVersion=""0.0.0.0-11.0.0.0"" newVersion=""11.0.0.0"" />
+      </dependentAssembly>";
+
+            var replacements = new[]
+            {
+                CommonReplacements.GetWebConfig(package, assemblyVersion, publicKeyToken),
+            };
+
+            // Act
+            var result = replacer.ReplaceInString(replacements, ref fileContent);
+
+            // Assert
+            Assert.IsTrue(result);
+            Assert.AreEqual(expected, fileContent);
+        }
+
+        [TestMethod]
+        public void TestAppConfigReplacement_WithComments_WithPublicKeyToken()
+        {
+            // Arrange
+            var replacer = CreateStringReplacer();
+            var package = "Newtonsoft.Json";
+            var assemblyVersion = "11.0.0.0";
+            var publicKeyToken = "30ad4fe6b2a6aeed";
+
+            var fileContent = @"      <dependentAssembly>
+        <!--some comment 1 -->
+        <assemblyIdentity name=""Newtonsoft.Json"" publicKeyToken=""30ad4fe6b2a6aaaa"" culture=""neutral"" />
+        <!--some comment 2 -->
+        <bindingRedirect oldVersion=""0.0.0.0-10.0.0.0"" newVersion=""10.0.0.0"" />
+        <!--some comment 3 -->
+      </dependentAssembly>";
+
+            var expected = @"      <dependentAssembly>
+        <!--some comment 1 -->
+        <assemblyIdentity name=""Newtonsoft.Json"" publicKeyToken=""30ad4fe6b2a6aeed"" culture=""neutral"" />
+        <!--some comment 2 -->
+        <bindingRedirect oldVersion=""0.0.0.0-11.0.0.0"" newVersion=""11.0.0.0"" />
+        <!--some comment 3 -->
+      </dependentAssembly>";
+
+            var replacements = new[]
+            {
+                CommonReplacements.GetWebConfig(package, assemblyVersion, publicKeyToken),
             };
 
             // Act

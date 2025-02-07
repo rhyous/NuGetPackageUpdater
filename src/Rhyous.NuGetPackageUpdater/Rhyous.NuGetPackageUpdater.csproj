@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net60</TargetFrameworks>
+		<TargetFrameworks>net90</TargetFrameworks>
 		<OutputType>Exe</OutputType>
 		<AssemblyName>Rhyous.NuGetPackageUpdater</AssemblyName>
 		<RootNamespace>Rhyous.NuGetPackageUpdater</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Rhyous.SimpleArgs" version="2.0.1" />
+		<PackageReference Include="Rhyous.SimpleArgs" version="2.1.0" />
 	</ItemGroup>
 
 </Project>
