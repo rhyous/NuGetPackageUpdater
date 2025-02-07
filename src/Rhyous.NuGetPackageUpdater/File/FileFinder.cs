@@ -17,7 +17,7 @@ namespace Rhyous.NuGetPackageUpdater
 
         public IList<string> Find(string directory, string pattern)
         {
-            if (_Settings.ExcludeDirs.Contains(directory))
+            if (_Settings.ExcludeDirs != null && _Settings.ExcludeDirs.Contains(directory))
                 return new List<string>();
             var fileList = new List<string>();
             var dirList = new List<string>();
